@@ -12,6 +12,7 @@ import (
 
 func main() {
 
+	//0. Do some heap allocation
 	arr := make([][]int, 100)
 	for i := 0; i < 100; i++ {
 		arr[i] = make([]int, 100)
