@@ -11,6 +11,12 @@ import (
 )
 
 func main() {
+
+	arr := make([][]int, 100)
+	for i := 0; i < 100; i++ {
+		arr[i] = make([]int, 100)
+	}
+
 	heapp := pprof.Lookup("heap")
 	buf := &bytes.Buffer{}
 	heapp.WriteTo(buf, 0)
