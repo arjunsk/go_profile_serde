@@ -14,7 +14,7 @@ func main() {
 	heapp := pprof.Lookup("heap")
 	buf := &bytes.Buffer{}
 	heapp.WriteTo(buf, 0)
-	debug.SetMemoryLimit(-1)
+	_ = debug.SetMemoryLimit(-1)
 	logBytes := buf.Bytes()
 
 	// 1. Copy the byte slice
