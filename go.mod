@@ -1,4 +1,4 @@
-module profile_reconstruct
+module go_profile_serde
 
 go 1.21.5
 
