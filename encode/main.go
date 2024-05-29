@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
+	"os"
 	"runtime/debug"
 	"runtime/pprof"
 )
@@ -49,4 +50,11 @@ func main() {
 	fmt.Println("", bytes.Equal(decode1, decode2))
 	fmt.Println("", bytes.Equal(logBytesCopy, decode1))
 	fmt.Println("", bytes.Equal(logBytesCopy, decode2))
+
+	// 5. Write OS file
+	err := os.WriteFile("heap.pprof", logBytesCopy, 0644)
+	if err != nil {
+		panic(err)
+	}
+	// go tool pprof -http=:8080 heap.pprof
 }
