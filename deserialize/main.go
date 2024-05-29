@@ -18,7 +18,7 @@ type LogEntry struct {
 }
 
 func main() {
-	logFilePath := "decode/out.log"
+	logFilePath := "deserialize/out.log"
 	outputFilePath := "heap.pprof"
 
 	file, err := os.Open(logFilePath)
@@ -28,7 +28,7 @@ func main() {
 	}
 	defer file.Close()
 
-	var base64Heap []byte
+	var logBytes []byte
 	reader := bufio.NewReader(file)
 
 	for {
@@ -54,11 +54,11 @@ func main() {
 				fmt.Printf("Error decoding base64: %v\n", err)
 				panic(err)
 			}
-			base64Heap = append(base64Heap, data...)
+			logBytes = append(logBytes, data...)
 		}
 	}
 
-	err = os.WriteFile(outputFilePath, base64Heap, 0644)
+	err = os.WriteFile(outputFilePath, logBytes, 0644)
 	if err != nil {
 		fmt.Printf("Error writing heap.pprof file: %v\n", err)
 		return
