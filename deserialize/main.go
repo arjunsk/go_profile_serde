@@ -18,7 +18,7 @@ type LogEntry struct {
 }
 
 func main() {
-	logFilePath := "deserialize/out2.log"
+	logFilePath := "deserialize/out.log"
 	outputFilePath := "heap.pprof"
 
 	file, err := os.Open(logFilePath)
@@ -49,6 +49,7 @@ func main() {
 
 		if !start {
 			if logEntry.Msg[:2] == "H4" {
+				// start of heap profile
 				start = true
 			} else {
 				continue
@@ -65,6 +66,7 @@ func main() {
 			logBytes = append(logBytes, data...)
 		}
 		if logEntry.Mlimit != "" {
+			// end of heap profile
 			break
 		}
 	}
