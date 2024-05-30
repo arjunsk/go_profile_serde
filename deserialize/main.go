@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 )
 
 // LogEntry represents a single log entry
@@ -18,7 +19,7 @@ type LogEntry struct {
 }
 
 func main() {
-	logFilePath := "deserialize/out.log"
+	logFilePath := "deserialize/out2.log"
 	outputFilePath := "heap.pprof"
 
 	file, err := os.Open(logFilePath)
@@ -48,7 +49,7 @@ func main() {
 		}
 
 		if !start {
-			if logEntry.Msg[:2] == "H4" {
+			if strings.HasPrefix(logEntry.Msg, "H4") {
 				// start of heap profile
 				start = true
 			} else {
@@ -56,7 +57,7 @@ func main() {
 			}
 		}
 
-		if logEntry.Msg != "" && logEntry.Caller == "dbutils/mem.go:124" {
+		if logEntry.Msg != "" && strings.HasPrefix(logEntry.Caller, "dbutils/mem.go") {
 			fmt.Println("heap profile chunk found")
 			data, err := base64.RawStdEncoding.DecodeString(logEntry.Msg)
 			if err != nil {
