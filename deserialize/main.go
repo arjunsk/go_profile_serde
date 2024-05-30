@@ -56,6 +56,9 @@ func main() {
 			}
 			logBytes = append(logBytes, data...)
 		}
+		if logEntry.Mlimit != "" {
+			break
+		}
 	}
 
 	err = os.WriteFile(outputFilePath, logBytes, 0644)
