@@ -18,7 +18,7 @@ type LogEntry struct {
 }
 
 func main() {
-	logFilePath := "deserialize/out.log"
+	logFilePath := "deserialize/out2.log"
 	outputFilePath := "heap.pprof"
 
 	file, err := os.Open(logFilePath)
@@ -30,7 +30,7 @@ func main() {
 
 	var logBytes []byte
 	reader := bufio.NewReader(file)
-
+	start := false
 	for {
 		line, err := reader.ReadString('\n')
 		if err != nil {
@@ -45,6 +45,14 @@ func main() {
 		if err != nil {
 			fmt.Printf("Error parsing JSON: %v\n", err)
 			panic(err)
+		}
+
+		if !start {
+			if logEntry.Msg[:2] == "H4" {
+				start = true
+			} else {
+				continue
+			}
 		}
 
 		if logEntry.Msg != "" && logEntry.Caller == "dbutils/mem.go:124" {
