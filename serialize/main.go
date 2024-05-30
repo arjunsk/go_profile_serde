@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/base64"
 	"fmt"
-	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"os"
 	"runtime/debug"
 	"runtime/pprof"
@@ -20,7 +19,7 @@ func main() {
 
 	heapp := pprof.Lookup("heap")
 	buf := &bytes.Buffer{}
-	heapp.WriteTo(buf, 0)
+	_ = heapp.WriteTo(buf, 0)
 	_ = debug.SetMemoryLimit(-1)
 	logBytes := buf.Bytes()
 
@@ -32,16 +31,8 @@ func main() {
 	encode1 := base64.RawStdEncoding.EncodeToString(logBytes)
 
 	// 2.b Encode in chunks of 50 bytes using RawStdEncoding
-	var encode2 []string
 	chunkSize := 50
-	for len(logBytes) > chunkSize {
-		chunk := base64.RawStdEncoding.EncodeToString(logBytes[:chunkSize])
-		logutil.Info(chunk)
-		encode2 = append(encode2, chunk)
-		logBytes = logBytes[chunkSize:]
-	}
-	logutil.Info(base64.RawStdEncoding.EncodeToString(logBytes))
-	encode2 = append(encode2, base64.RawStdEncoding.EncodeToString(logBytes))
+	encode2 := base64Chunk(logBytes, chunkSize)
 
 	// 3.a Decode the base64-encoded string
 	decode1, _ := base64.RawStdEncoding.DecodeString(encode1)
@@ -63,4 +54,17 @@ func main() {
 		panic(err)
 	}
 	// go tool pprof -http=:8080 heap.pprof
+}
+
+// base64Chunk encodes the byte slice in chunks of chunkSize bytes
+// This function is extracted from
+// https://github.com/matrixorigin/matrixone/blob/dfa158c1073a3db6eccd5e7c1fd6b4541a744a73/pkg/vm/engine/tae/db/dbutils/mem.go#L111-L131
+func base64Chunk(logBytes []byte, chunkSize int) []string {
+	var encoded []string
+	for len(logBytes) > chunkSize {
+		encoded = append(encoded, base64.RawStdEncoding.EncodeToString(logBytes[:chunkSize]))
+		logBytes = logBytes[chunkSize:]
+	}
+	encoded = append(encoded, base64.RawStdEncoding.EncodeToString(logBytes))
+	return encoded
 }
